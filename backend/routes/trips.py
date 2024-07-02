@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify
 from models import Trip
+from app import db
 
 trips_bp = Blueprint('trips', __name__)
 
