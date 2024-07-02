@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { TextField, Button, Typography, Container, Box } from '@mui/material';
 
 function Reservation() {
     const [userId, setUserId] = useState('');
@@ -18,26 +19,53 @@ function Reservation() {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <h2>Reserve a Trip</h2>
-            <div>
-                <label>User ID: </label>
-                <input 
-                    type="text" 
-                    value={userId} 
-                    onChange={(e) => setUserId(e.target.value)} 
-                />
-            </div>
-            <div>
-                <label>Trip ID: </label>
-                <input 
-                    type="text" 
-                    value={tripId} 
-                    onChange={(e) => setTripId(e.target.value)} 
-                />
-            </div>
-            <button type="submit">Reserve</button>
-        </form>
+        <Container maxWidth="xs">
+            <Box
+                sx={{
+                    marginTop: 8,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography component="h1" variant="h5">
+                    Reserve a Trip
+                </Typography>
+                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="userId"
+                        label="User ID"
+                        name="userId"
+                        autoComplete="userId"
+                        autoFocus
+                        value={userId}
+                        onChange={(e) => setUserId(e.target.value)}
+                    />
+                    <TextField
+                        margin="normal"
+                        required
+                        fullWidth
+                        id="tripId"
+                        label="Trip ID"
+                        name="tripId"
+                        autoComplete="tripId"
+                        value={tripId}
+                        onChange={(e) => setTripId(e.target.value)}
+                    />
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        sx={{ mt: 3, mb: 2 }}
+                    >
+                        Reserve
+                    </Button>
+                </Box>
+            </Box>
+        </Container>
     );
 }
 
