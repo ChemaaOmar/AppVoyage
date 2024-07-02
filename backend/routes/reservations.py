@@ -1,6 +1,7 @@
+# backend/routes/reservations.py
 from flask import Blueprint, request, jsonify
+from extensions import db  # Assurez-vous que db est importé depuis extensions
 from models import Reservation
-from app import db
 
 reservations_bp = Blueprint('reservations', __name__)
 

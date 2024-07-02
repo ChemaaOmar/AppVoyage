@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from extensions import db
 from models import User
-from app import db
 
 auth_bp = Blueprint('auth', __name__)
+
+print(f"SQLAlchemy instance in auth: {db}")  # Ajout d'un point de contrôle
 
 @auth_bp.route('/register', methods=['POST'])
 def register():

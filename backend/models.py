@@ -1,5 +1,6 @@
+# backend/models.py
 from werkzeug.security import generate_password_hash, check_password_hash
-from app import db
+from extensions import db  # Assurez-vous que db est importé depuis extensions
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

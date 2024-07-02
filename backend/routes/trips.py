@@ -1,6 +1,7 @@
+# backend/routes/trips.py
 from flask import Blueprint, jsonify
+from extensions import db  # Assurez-vous que db est importé depuis extensions
 from models import Trip
-from app import db
 
 trips_bp = Blueprint('trips', __name__)
 
