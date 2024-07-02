@@ -9,11 +9,8 @@ def create_app():
     CORS(app)
     app.config.from_object('config.Config')
     db.init_app(app)
-
+    
     with app.app_context():
-        # Créer toutes les tables
-        db.create_all()
-
         # Importer et enregistrer les blueprints
         from routes.auth import auth_bp
         from routes.reservations import reservations_bp
@@ -22,6 +19,9 @@ def create_app():
         app.register_blueprint(auth_bp)
         app.register_blueprint(reservations_bp)
         app.register_blueprint(trips_bp)
+
+        # Créer toutes les tables
+        db.create_all()
 
     return app
 
