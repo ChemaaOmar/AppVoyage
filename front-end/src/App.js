@@ -7,6 +7,7 @@ import Login from './components/Login';
 import TripList from './components/TripList';
 import Reservation from './components/Reservation';
 import Confirmation from './components/Confirmation';
+import SecurityToggle from './components/SecurityToggle';
 
 // Créez un thème de base
 const theme = createTheme({
@@ -22,20 +23,18 @@ const theme = createTheme({
 
 function App() {
     return (
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Router>
-                <div className="App">
-                    <Routes>
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/trips" element={<TripList />} />
-                        <Route path="/reserve" element={<Reservation />} />
-                        <Route path="/confirm" element={<Confirmation />} />
-                    </Routes>
-                </div>
-            </Router>
-        </ThemeProvider>
+        <Router>
+            <div className="App">
+                <SecurityToggle />
+                <Routes>
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/trips" element={<TripList />} />
+                    <Route path="/reserve" element={<Reservation />} />
+                    <Route path="/confirm" element={<Confirmation />} />
+                </Routes>
+            </div>
+        </Router>
     );
 }
 

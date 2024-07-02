@@ -1,6 +1,8 @@
 from flask import Flask
 from extensions import db, cors
 from config import Config
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 def create_app():
     app = Flask(__name__)
@@ -9,10 +11,12 @@ def create_app():
     cors.init_app(app)
     db.init_app(app)
 
-    @app.after_request
-    def set_csp(response):
-        response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'"
-        return response
+    # Initialisation de Flask-Limiter avec key_func
+    limiter = Limiter(
+        key_func=get_remote_address,
+        app=app,
+        default_limits=["20 per day", "5 per hour"]
+    )
 
     # Importer et enregistrer les blueprints
     from routes.auth import auth_bp
