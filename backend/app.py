@@ -9,16 +9,21 @@ def create_app():
     cors.init_app(app)
     db.init_app(app)
 
-    print(f"SQLAlchemy instance in app: {db}")  # Ajout d'un point de contrôle
+    @app.after_request
+    def set_csp(response):
+        response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'"
+        return response
 
     # Importer et enregistrer les blueprints
     from routes.auth import auth_bp
     from routes.reservations import reservations_bp
     from routes.trips import trips_bp
+    from routes.security import security_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(reservations_bp)
     app.register_blueprint(trips_bp)
+    app.register_blueprint(security_bp)
 
     return app
 
