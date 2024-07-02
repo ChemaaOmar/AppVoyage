@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Container, Typography, List, ListItem, ListItemText, Box } from '@mui/material';
 
 function TripList() {
     const [trips, setTrips] = useState([]);
@@ -13,16 +14,23 @@ function TripList() {
     }, []);
 
     return (
-        <div>
-            <h2>Available Trips</h2>
-            <ul>
-                {trips.map(trip => (
-                    <li key={trip.id}>
-                        {trip.destination} on {trip.date} - {trip.available_seats} seats available
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <Container maxWidth="md">
+            <Box sx={{ marginTop: 8 }}>
+                <Typography variant="h4" component="h2" gutterBottom>
+                    Available Trips
+                </Typography>
+                <List>
+                    {trips.map(trip => (
+                        <ListItem key={trip.id} sx={{ borderBottom: '1px solid #ccc' }}>
+                            <ListItemText 
+                                primary={`${trip.destination} on ${trip.date}`} 
+                                secondary={`${trip.available_seats} seats available`} 
+                            />
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
+        </Container>
     );
 }
 

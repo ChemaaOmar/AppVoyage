@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Container, Typography, List, ListItem, ListItemText, Box } from '@mui/material';
 
 function Confirmation() {
     const [reservations, setReservations] = useState([]);
@@ -13,16 +14,23 @@ function Confirmation() {
     }, []);
 
     return (
-        <div>
-            <h2>Reservation Confirmations</h2>
-            <ul>
-                {reservations.map(reservation => (
-                    <li key={reservation.id}>
-                        Reservation ID: {reservation.id} - User ID: {reservation.user_id} - Trip ID: {reservation.trip_id}
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <Container maxWidth="md">
+            <Box sx={{ marginTop: 8 }}>
+                <Typography variant="h4" component="h2" gutterBottom>
+                    Reservation Confirmations
+                </Typography>
+                <List>
+                    {reservations.map(reservation => (
+                        <ListItem key={reservation.id} sx={{ borderBottom: '1px solid #ccc' }}>
+                            <ListItemText 
+                                primary={`Reservation ID: ${reservation.id}`} 
+                                secondary={`User ID: ${reservation.user_id} - Trip ID: ${reservation.trip_id}`} 
+                            />
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
+        </Container>
     );
 }
 
