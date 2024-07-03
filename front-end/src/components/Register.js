@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { secureFetch } from '../utils/secureFetch';  // Importez secureFetch
 
 function Register() {
     const [username, setUsername] = useState('');
@@ -9,20 +10,19 @@ function Register() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:5000/register', {
+        const response = await secureFetch('http://localhost:5000/register', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ username, password })
         });
 
         if (response.ok) {
             const data = await response.json();
             console.log(data);
-            navigate('/login'); // Rediriger vers la page de login après un enregistrement réussi
+            navigate('/login');
         } else {
-            // Gérer les erreurs ici
             console.error('Registration failed');
         }
     };
