@@ -19,6 +19,8 @@ function TripList() {
                 <Typography variant="h4" component="h2" gutterBottom>
                     Available Trips
                 </Typography>
+                
+                
                 <List>
                     {trips.map(trip => (
                         <ListItem key={trip.id} sx={{ borderBottom: '1px solid #ccc' }}>

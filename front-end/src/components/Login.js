@@ -1,21 +1,33 @@
-import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Box } from '@mui/material';
+import React, { useState, useContext } from 'react';
+import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext';
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         const response = await fetch('http://localhost:5000/login', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({ username, password }),
         });
-        const data = await response.json();
-        alert(data.message);
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+            login();
+            navigate('/trips'); // Rediriger vers la page des voyages
+        } else {
+            // Gérer les erreurs ici
+            console.error('Login failed');
+        }
     };
 
     return (
@@ -28,43 +40,37 @@ function Login() {
                     alignItems: 'center',
                 }}
             >
-                <Typography component="h1" variant="h5">
+                <Typography variant="h4" component="h1" gutterBottom>
                     Login
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                <form onSubmit={handleSubmit}>
                     <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="username"
                         label="Username"
-                        name="username"
-                        autoComplete="username"
-                        autoFocus
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                     />
                     <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
                         label="Password"
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
                         type="password"
-                        id="password"
-                        autoComplete="current-password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <Button
                         type="submit"
-                        fullWidth
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
+                        color="primary"
+                        fullWidth
+                        sx={{ mt: 2 }}
                     >
                         Login
                     </Button>
-                </Box>
+                </form>
             </Box>
         </Container>
     );

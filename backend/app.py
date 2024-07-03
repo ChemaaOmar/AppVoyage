@@ -14,7 +14,7 @@ def create_app():
     limiter = Limiter(
         key_func=get_remote_address,
         app=app,
-        default_limits=["200 per day", "50 per hour"]
+        default_limits=["240 per day", "10 per hour"]
     )
 
     # Importer et enregistrer les blueprints
@@ -23,7 +23,7 @@ def create_app():
     from routes.trips import trips_bp
     from routes.security import security_bp
 
-    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(auth_bp)  # Sans le préfixe '/auth'
     app.register_blueprint(reservations_bp)
     app.register_blueprint(trips_bp)
     app.register_blueprint(security_bp, url_prefix='/security')
