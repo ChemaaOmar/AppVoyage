@@ -7,7 +7,6 @@ import Login from './components/Login';
 import TripList from './components/TripList';
 import Reservation from './components/Reservation';
 import Confirmation from './components/Confirmation';
-// import SecurityToggle from './components/SecurityToggle';
 import { AuthProvider } from './context/AuthContext';
 import NavBar from './components/NavBar';
 
@@ -25,20 +24,23 @@ const theme = createTheme({
 
 function App() {
     return (
-        <Router>
-            <AuthProvider>
-            <NavBar />
-            <div className="App">
-                <Routes>
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/trips" element={<TripList />} />
-                    <Route path="/reserve" element={<Reservation />} />
-                    <Route path="/confirm" element={<Confirmation />} />
-                </Routes>
-            </div>
-            </AuthProvider>
-        </Router>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Router>
+                <AuthProvider>
+                    <NavBar />
+                    <div className="App">
+                        <Routes>
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/trips" element={<TripList />} />
+                            <Route path="/reserve" element={<Reservation />} />
+                            <Route path="/confirm" element={<Confirmation />} />
+                        </Routes>
+                    </div>
+                </AuthProvider>
+            </Router>
+        </ThemeProvider>
     );
 }
 

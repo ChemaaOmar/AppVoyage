@@ -1,45 +1,32 @@
-from flask import Blueprint, request, jsonify, current_app
-from werkzeug.security import generate_password_hash, check_password_hash
-from extensions import db
+from flask import Blueprint, request, jsonify
+from extensions import db, limiter
 from models import User
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from flask_limiter.errors import RateLimitExceeded
+from app import limit_key_func  # Importer limit_key_func
 import bleach
 
 auth_bp = Blueprint('auth', __name__)
-limiter = Limiter(key_func=get_remote_address)
 
 @auth_bp.route('/register', methods=['POST'])
+@limiter.limit("5 per minute", key_func=limit_key_func)
 def register():
     data = request.get_json()
-    username = bleach.clean(data['username'])
-    password = bleach.clean(data['password'])
-    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-    new_user = User(username=username, password=hashed_password)
-    db.session.add(new_user)
+    username = bleach.clean(data.get('username'))
+    password = bleach.clean(data.get('password'))
+    if not username or not password:
+        return jsonify({"message": "Invalid input"}), 400
+
+    user = User(username=username, password=password)
+    db.session.add(user)
     db.session.commit()
-    return jsonify({'message': 'Registered successfully'})
+    return jsonify({"message": "User registered successfully"}), 201
 
 @auth_bp.route('/login', methods=['POST'])
+@limiter.limit("5 per minute", key_func=limit_key_func)
 def login():
-    try:
-        data = request.get_json()
-        username = bleach.clean(data['username'])
-        password = bleach.clean(data['password'])
-        user = User.query.filter_by(username=username).first()
-        if not user or not check_password_hash(user.password, password):
-            return jsonify({'message': 'Login failed'}), 401
-        return jsonify({'message': 'Logged in successfully'})
-    except RateLimitExceeded:
-        return jsonify({'message': 'Too many login attempts. Please try again later.'}), 429
-
-# Définir le décorateur conditionnellement en fonction du mode de sécurité
-def conditional_login():
-    if current_app.config['SECURITY_MODE']:
-        return limiter.limit("5 per minute")(login)()
-    else:
-        return login()
-
-# Ajouter la route avec le décorateur conditionnellement
-auth_bp.add_url_rule('/login', 'conditional_login', conditional_login, methods=['POST'])
+    data = request.get_json()
+    username = bleach.clean(data.get('username'))
+    password = bleach.clean(data.get('password'))
+    user = User.query.filter_by(username=username).first()
+    if user and user.password == password:
+        return jsonify({"message": "Login successful"}), 200
+    return jsonify({"message": "Invalid credentials"}), 401
