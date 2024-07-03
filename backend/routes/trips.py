@@ -1,38 +1,31 @@
-from flask import Blueprint, jsonify, current_app
-from models import Trip
+from flask import Blueprint, request, jsonify
 from extensions import db
-from sqlalchemy import text
+from models import Trip
+import bleach
 
 trips_bp = Blueprint('trips', __name__)
 
+# Route pour obtenir tous les voyages
 @trips_bp.route('/trips', methods=['GET'])
 def get_trips():
-    if current_app.config['SECURITY_MODE']:
-        # Mode sécurisé : utiliser SQLAlchemy avec des requêtes sécurisées
-        trips = Trip.query.all()
-    else:
-        # Mode non sécurisé : exécuter une requête brute (vulnérable à l'injection SQL)
-        result = db.session.execute(text('SELECT * FROM trip'))
-        trips = [Trip(id=row[0], destination=row[1], date=row[2], available_seats=row[3]) for row in result]
-    
-    result = []
-    for trip in trips:
-        trip_data = {'id': trip.id, 'destination': trip.destination, 'date': trip.date, 'available_seats': trip.available_seats}
-        result.append(trip_data)
-    return jsonify(result)
+    trips = Trip.query.all()
+    return jsonify([{
+        'id': trip.id,
+        'destination': bleach.clean(trip.destination),
+        'date': bleach.clean(trip.date),
+        'available_seats': trip.available_seats
+    } for trip in trips])
 
-@trips_bp.route('/trips/<destination>', methods=['GET'])
-def get_trips_by_destination(destination):
-    if current_app.config['SECURITY_MODE']:
-        # Mode sécurisé : utiliser SQLAlchemy avec des requêtes sécurisées
-        trips = Trip.query.filter_by(destination=destination).all()
-    else:
-        # Mode non sécurisé : exécuter une requête brute (vulnérable à l'injection SQL)
-        result = db.session.execute(text(f"SELECT * FROM trip WHERE destination = '{destination}'"))
-        trips = [Trip(id=row[0], destination=row[1], date=row[2], available_seats=row[3]) for row in result]
-    
-    result = []
-    for trip in trips:
-        trip_data = {'id': trip.id, 'destination': trip.destination, 'date': trip.date, 'available_seats': trip.available_seats}
-        result.append(trip_data)
-    return jsonify(result)
+# Route pour ajouter un nouveau voyage
+@trips_bp.route('/trips', methods=['POST'])
+def add_trip():
+    data = request.get_json()
+    # Nettoyage des entrées utilisateur
+    destination = bleach.clean(data.get('destination'))
+    date = bleach.clean(data.get('date'))
+    available_seats = data.get('available_seats')
+
+    new_trip = Trip(destination=destination, date=date, available_seats=available_seats)
+    db.session.add(new_trip)
+    db.session.commit()
+    return jsonify({'message': 'Trip added successfully'})

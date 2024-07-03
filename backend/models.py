@@ -22,3 +22,8 @@ class Reservation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     trip_id = db.Column(db.Integer, db.ForeignKey('trip.id'), nullable=False)
+
+
+class SecurityMode(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    mode = db.Column(db.String(10), nullable=False)

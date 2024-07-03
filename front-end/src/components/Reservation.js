@@ -1,21 +1,32 @@
 import React, { useState } from 'react';
-import { TextField, Button, Typography, Container, Box } from '@mui/material';
+import { Container, Typography, TextField, Button, Box } from '@mui/material';
+import DOMPurify from 'dompurify';
 
 function Reservation() {
     const [userId, setUserId] = useState('');
     const [tripId, setTripId] = useState('');
+    const [message, setMessage] = useState('');
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const response = await fetch('http://localhost:5000/reserve', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ user_id: userId, trip_id: tripId })
-        });
-        const data = await response.json();
-        alert(data.message);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:5000/reserve', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: userId, trip_id: tripId }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                setMessage(data.message);
+            } else {
+                setMessage(data.message || 'Reservation failed');
+            }
+        } catch (error) {
+            setMessage('Failed to connect to the server');
+        }
     };
 
     return (
@@ -28,42 +39,41 @@ function Reservation() {
                     alignItems: 'center',
                 }}
             >
-                <Typography component="h1" variant="h5">
+                <Typography variant="h4" component="h1" gutterBottom>
                     Reserve a Trip
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+                {message && (
+                    <Typography variant="body1" color="error" gutterBottom>
+                        <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(message) }} />
+                    </Typography>
+                )}
+                <form onSubmit={handleSubmit}>
                     <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="userId"
                         label="User ID"
-                        name="userId"
-                        autoComplete="userId"
-                        autoFocus
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
                         value={userId}
                         onChange={(e) => setUserId(e.target.value)}
                     />
                     <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        id="tripId"
                         label="Trip ID"
-                        name="tripId"
-                        autoComplete="tripId"
+                        variant="outlined"
+                        margin="normal"
+                        fullWidth
                         value={tripId}
                         onChange={(e) => setTripId(e.target.value)}
                     />
                     <Button
                         type="submit"
-                        fullWidth
                         variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
+                        color="primary"
+                        fullWidth
+                        sx={{ mt: 2 }}
                     >
                         Reserve
                     </Button>
-                </Box>
+                </form>
             </Box>
         </Container>
     );

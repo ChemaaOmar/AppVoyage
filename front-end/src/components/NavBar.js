@@ -33,6 +33,7 @@ function NavBar() {
         });
         const data = await response.json();
         setMode(data.mode);
+        // Inutile de recharger la page, le middleware appliquera le changement de mode en temps réel
     };
 
     return (

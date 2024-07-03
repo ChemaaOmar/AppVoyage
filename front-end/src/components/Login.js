@@ -6,27 +6,33 @@ import AuthContext from '../context/AuthContext';
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:5000/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, password }),
-        });
+        try {
+            const response = await fetch('http://localhost:5000/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
 
-        if (response.ok) {
+            if (!response.ok) {
+                const errorData = await response.json();
+                setError(errorData.message || 'Login failed');
+                return;
+            }
+
             const data = await response.json();
             console.log(data);
             login();
             navigate('/trips'); // Rediriger vers la page des voyages
-        } else {
-            // Gérer les erreurs ici
-            console.error('Login failed');
+        } catch (error) {
+            setError('Failed to connect to the server');
         }
     };
 
@@ -43,6 +49,11 @@ function Login() {
                 <Typography variant="h4" component="h1" gutterBottom>
                     Login
                 </Typography>
+                {error && (
+                    <Typography variant="body1" color="error" gutterBottom>
+                        {error}
+                    </Typography>
+                )}
                 <form onSubmit={handleSubmit}>
                     <TextField
                         label="Username"

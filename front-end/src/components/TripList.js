@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, List, ListItem, ListItemText, Box } from '@mui/material';
+import DOMPurify from 'dompurify';
 
 function TripList() {
     const [trips, setTrips] = useState([]);
@@ -19,14 +20,12 @@ function TripList() {
                 <Typography variant="h4" component="h2" gutterBottom>
                     Available Trips
                 </Typography>
-                
-                
                 <List>
                     {trips.map(trip => (
                         <ListItem key={trip.id} sx={{ borderBottom: '1px solid #ccc' }}>
                             <ListItemText 
-                                primary={`${trip.destination} on ${trip.date}`} 
-                                secondary={`${trip.available_seats} seats available`} 
+                                primary={<span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(`${trip.destination} on ${trip.date}`) }} />}
+                                secondary={<span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(`${trip.available_seats} seats available`) }} />}
                             />
                         </ListItem>
                     ))}
