@@ -5,7 +5,7 @@ function SecurityToggle() {
 
     useEffect(() => {
         const fetchSecurityMode = async () => {
-            const response = await fetch('http://localhost:5000/get-security-mode');
+            const response = await fetch('http://localhost:5000/security/get-security-mode');
             const data = await response.json();
             setMode(data.mode);
         };
@@ -13,7 +13,7 @@ function SecurityToggle() {
     }, []);
 
     const toggleSecurity = async () => {
-        const response = await fetch('http://localhost:5000/toggle-security', {
+        const response = await fetch('http://localhost:5000/security/toggle-security', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

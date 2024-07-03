@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db
 from models import User
@@ -13,7 +13,12 @@ def register():
     data = request.get_json()
     username = data['username']
     password = data['password']
-    hashed_password = generate_password_hash(password, method='sha256')
+    
+    if current_app.config['SECURITY_MODE']:
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+    else:
+        hashed_password = password  # Stocker en clair en mode non sécurisé
+
     new_user = User(username=username, password=hashed_password)
     db.session.add(new_user)
     db.session.commit()
@@ -26,6 +31,15 @@ def login():
     username = data['username']
     password = data['password']
     user = User.query.filter_by(username=username).first()
-    if not user or not check_password_hash(user.password, password):
+    
+    if not user:
         return jsonify({'message': 'Login failed'}), 401
-    return jsonify({'message': 'Logged in successfully'})
+
+    if current_app.config['SECURITY_MODE']:
+        if not check_password_hash(user.password, password):
+            return jsonify({'message': 'Login failed'}), 401
+    else:
+        if user.password != password:
+            return jsonify({'message': 'Login failed'}), 401
+    
+    return jsonify({'message': 'Logged in successfully', 'password': user.password})  # Envoie le mot de passe en clair en mode non sécurisé
