@@ -28,5 +28,4 @@ def toggle_security():
     db.session.commit()
     current_app.config['SECURITY_MODE'] = (new_mode == 'secure')
     current_app.logger.info(f'Security mode toggled to: {new_mode}')
-    current_app.logger.info('CSRF exemption active for /toggle-security')
     return jsonify({'mode': new_mode})

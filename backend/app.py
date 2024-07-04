@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from extensions import db, cors, limiter, csrf
 from config import Config
 from middleware import apply_security_mode_middleware
@@ -9,7 +9,8 @@ def create_app():
     app.config.from_object(Config)
     app.config['SECRET_KEY'] = 'your_secret_key'
 
-    cors.init_app(app, resources={r"*": {"origins": "http://localhost:3000"}})
+    cors.init_app(app, resources={r"*": {"origins": "http://localhost:3000"}},
+                  allow_headers=['Content-Type', 'X-CSRFToken'])  # Ajoutez les en-têtes nécessaires
     db.init_app(app)
     limiter.init_app(app)
     
@@ -32,6 +33,14 @@ def create_app():
     app.register_blueprint(reservations_bp)
     app.register_blueprint(trips_bp)
     app.register_blueprint(security_bp, url_prefix='/security')
+
+    @app.after_request
+    def after_request(response):
+        response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization, X-CSRFToken')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+        app.logger.info(f'CORS headers added: {response.headers}')
+        return response
 
     return app
 

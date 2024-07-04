@@ -10,17 +10,22 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const response = await secureFetch('http://localhost:5000/login', {
-            method: 'POST',
-            body: JSON.stringify({ username, password })
-        });
+        try {
+            const response = await secureFetch('http://localhost:5000/login', {
+                method: 'POST',
+                body: JSON.stringify({ username, password })
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data);
-            navigate('/trips');
-        } else {
-            console.error('Login failed');
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                navigate('/trips');
+            } else {
+                const errorData = await response.json();
+                console.error('Login failed:', errorData);
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
         }
     };
 

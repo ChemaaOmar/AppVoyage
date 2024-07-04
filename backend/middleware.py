@@ -14,8 +14,8 @@ def apply_security_mode_middleware(app):
             csrf.exempt('routes.security.toggle_security')
             current_app.logger.debug('CSRF protection exempted for /toggle-security')
         else:
-            csrf._exempt_views.clear()
-            current_app.logger.debug('CSRF protection applied for /toggle-security')
+            csrf.exempt('routes.security.toggle_security')  # Toujours exempter cette route
+            current_app.logger.debug('CSRF protection applied for other routes')
 
     @app.after_request
     def set_csrf_token(response):

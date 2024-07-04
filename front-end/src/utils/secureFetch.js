@@ -1,5 +1,3 @@
-// secureFetch.js
-
 let csrfToken = null;
 
 async function getCSRFToken() {
@@ -7,6 +5,10 @@ async function getCSRFToken() {
         const response = await fetch('http://localhost:5000/security/get-csrf-token', {
             credentials: 'include'  // Inclure les cookies dans la requête
         });
+        if (!response.ok) {
+            console.error('Failed to fetch CSRF token:', response);
+            throw new Error('Failed to fetch CSRF token');
+        }
         const data = await response.json();
         csrfToken = data.csrf_token;
     }
@@ -14,28 +16,44 @@ async function getCSRFToken() {
 }
 
 export async function secureFetch(url, options = {}) {
-    const modeResponse = await fetch('http://localhost:5000/security/get-security-mode', {
-        credentials: 'include'  // Inclure les cookies dans la requête
-    });
-    const modeData = await modeResponse.json();
-    const mode = modeData.mode;
+    try {
+        const modeResponse = await fetch('http://localhost:5000/security/get-security-mode', {
+            credentials: 'include'  // Inclure les cookies dans la requête
+        });
+        if (!modeResponse.ok) {
+            console.error('Failed to fetch security mode:', modeResponse);
+            throw new Error(`Failed to fetch security mode: ${modeResponse.statusText}`);
+        }
+        const modeData = await modeResponse.json();
+        console.log('Security mode:', modeData);
+        const mode = modeData.mode;
 
-    if (mode === 'secure') {
-        const token = await getCSRFToken();
-        options.headers = {
-            ...options.headers,
-            'X-CSRFToken': token,
-            'Content-Type': 'application/json'
-        };
-    } else {
-        options.headers = {
-            ...options.headers,
-            'Content-Type': 'application/json'
-        };
+        if (mode === 'secure') {
+            const token = await getCSRFToken();
+            options.headers = {
+                ...options.headers,
+                'X-CSRFToken': token,
+                'Content-Type': 'application/json'
+            };
+        } else {
+            options.headers = {
+                ...options.headers,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        const fetchResponse = await fetch(url, {
+            ...options,
+            credentials: 'include'  // Inclure les cookies dans la requête
+        });
+
+        if (!fetchResponse.ok) {
+            console.error('Failed to fetch:', fetchResponse);
+            throw new Error(`Failed to fetch: ${fetchResponse.statusText}`);
+        }
+        return fetchResponse;
+    } catch (error) {
+        console.error('Error in secureFetch:', error);
+        throw error;
     }
-
-    return fetch(url, {
-        ...options,
-        credentials: 'include'  // Inclure les cookies dans la requête
-    });
 }
