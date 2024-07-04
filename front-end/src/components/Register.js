@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { secureFetch } from '../utils/secureFetch';  // Importez secureFetch
+import { secureFetch } from '../utils/SecureFetch';  // Importez secureFetch
 
 function Register() {
     const [username, setUsername] = useState('');

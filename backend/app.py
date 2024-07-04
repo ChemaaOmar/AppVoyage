@@ -1,7 +1,6 @@
-from flask import Flask, current_app
+from flask import Flask
 from extensions import db, cors, limiter, csrf
 from config import Config
-from flask_limiter.util import get_remote_address
 from middleware import apply_security_mode_middleware
 from models import SecurityMode
 
@@ -10,9 +9,10 @@ def create_app():
     app.config.from_object(Config)
     app.config['SECRET_KEY'] = 'your_secret_key'
 
-    cors.init_app(app)
+    cors.init_app(app, resources={r"*": {"origins": "http://localhost:3000"}})
     db.init_app(app)
     limiter.init_app(app)
+    
     apply_security_mode_middleware(app)
 
     with app.app_context():
@@ -34,18 +34,6 @@ def create_app():
     app.register_blueprint(security_bp, url_prefix='/security')
 
     return app
-
-def limit_key_func():
-    security_mode = SecurityMode.query.first().mode
-    if security_mode == 'secure':
-        return get_remote_address()
-    else:
-        return None
-
-@limiter.request_filter
-def exempt_unsafe_mode():
-    security_mode = SecurityMode.query.first().mode
-    return security_mode == 'unsafe'
 
 if __name__ == '__main__':
     app = create_app()

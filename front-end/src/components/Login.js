@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Container, Typography, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { secureFetch } from '../utils/secureFetch';  // Importez secureFetch
+import { secureFetch } from '../utils/SecureFetch';  // Importez secureFetch
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -12,9 +12,6 @@ function Login() {
         e.preventDefault();
         const response = await secureFetch('http://localhost:5000/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
             body: JSON.stringify({ username, password })
         });
 
