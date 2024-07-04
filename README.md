@@ -54,8 +54,8 @@ Cette application est conçue pour gérer les réservations de voyages en intég
 
 1. Clonez le dépôt de l'application :
     ```sh
-    git clone <url-du-dépôt>
-    cd <nom-du-répertoire>
+    git clone https://github.com/ChemaaOmar/AppVoyage
+    cd AppVoyage
     ```
 
 2. Installez les dépendances backend :
